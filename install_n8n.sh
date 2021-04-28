@@ -13,6 +13,5 @@ sudo service docker start
 sudo chkconfig docker on
 sudo yum install -y git
 mkdir /home/ec2-user/n8n
-sudo /usr/local/bin/docker-compose up -d &
 touch /home/ec2-user/provisioncomplete
 

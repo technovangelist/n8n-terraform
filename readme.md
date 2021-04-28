@@ -24,4 +24,5 @@ This is a quick, repeatable terraform to create an EC2 instance on AWS with dock
 8. If everything worked you will get an ssh command at the end to log you in. Run that. 
 9.  Look for a `provisioncomplete` file in the ec2-user home directory. That says everything is ready to go.
 10. Run `docker-compose up -d` to start n8n.
-11. Hopefully it worked.
+11. Hopefully it worked. If you get an error, wait another few minutes
+12. 
