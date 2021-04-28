@@ -119,7 +119,7 @@ resource "aws_instance" "n8n" {
   subnet_id              = aws_subnet.n8n-subnet.id
   vpc_security_group_ids = [aws_security_group.n8n-sg.id]
   instance_type          = "t2.micro"
-  user_data              = templatefile("install_n8n.sh.tpl", {})
+  user_data              = file("install_n8n.sh")
   key_name               = aws_key_pair.ssh-key.key_name
   tags = {
     Name = "n8n"
