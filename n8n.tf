@@ -2,7 +2,7 @@
 
 resource "null_resource" "setup" {
   provisioner "local-exec" {
-    command = "sed -i '' '/${var.ipaddress}/d'  ~/.ssh/known_hosts"
+    command = "sed -i '' '/${var.IPADDRESS}/d'  ~/.ssh/known_hosts"
   }
 }
 
@@ -16,11 +16,11 @@ terraform {
 }
 
 resource "aws_key_pair" "ssh-key" {
-  key_name   = var.keyname
-  public_key = file("${var.keyname}.pub")
+  key_name   = var.KEYNAME
+  public_key = file("${var.KEYNAME}.pub")
 }
 provider "aws" {
-  region = var.region
+  region = var.REGION
 
 }
 
@@ -45,7 +45,7 @@ resource "aws_subnet" "n8n-subnet" {
   vpc_id                  = aws_vpc.n8n-vpc.id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = "true"
-  availability_zone       = var.az
+  availability_zone       = var.AZ
   tags = {
     Name = "n8n"
   }
@@ -76,7 +76,7 @@ resource "aws_route_table_association" "n8n-crta-subnet" {
 
 resource "aws_eip_association" "eip_assoc" {
   instance_id   = aws_instance.n8n.id
-  allocation_id = var.elasticipalloc
+  allocation_id = var.ELASTICIPALLOC
 }
 resource "aws_security_group" "n8n-sg" {
   name        = "n8n-sg"
@@ -115,7 +115,7 @@ resource "aws_security_group" "n8n-sg" {
 
 resource "aws_instance" "n8n" {
   ami                    = "ami-0518bb0e75d3619ca"
-  availability_zone      = var.az
+  availability_zone      = var.AZ
   subnet_id              = aws_subnet.n8n-subnet.id
   vpc_security_group_ids = [aws_security_group.n8n-sg.id]
   instance_type          = "t2.micro"
@@ -125,7 +125,7 @@ resource "aws_instance" "n8n" {
     Name = "n8n"
   }
   provisioner "file" {
-    source      = ".env"
+    content     = templatefile(".env.tpl", { domain = var.DOMAIN, subdomain = var.SUBDOMAIN, basicauthuser = var.BASICAUTHUSER, basicauthpassword = var.BASICAUTHPASSWORD, datafolder = var.DATAFOLDER, timezone = var.TIMEZONE, email = var.EMAIL })
     destination = "/home/ec2-user/.env"
 
     connection {
@@ -151,5 +151,5 @@ resource "aws_instance" "n8n" {
 
 output "ssh" {
   description = "SSH to the IP Address"
-  value       = "ssh -i ./n8n ec2-user@${var.ipaddress} -o StrictHostKeyChecking=no"
+  value       = "ssh -i ./n8n ec2-user@${var.IPADDRESS} -o StrictHostKeyChecking=no"
 }
